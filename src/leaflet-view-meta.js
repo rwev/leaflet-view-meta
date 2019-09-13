@@ -39,7 +39,10 @@ L.Control.ViewMeta = L.Control.extend({
                 this.map.on(`resize`, () => this.update());
                 this.map.on(`zoomend`, () => this.update());
                 this.map.on(`dragend`, () => this.update());
-                
+
+                this.urlParams = new URLSearchParams(window.location.search);
+                this.parseParams();
+
                 return this.container;
         },
 
@@ -49,6 +52,7 @@ L.Control.ViewMeta = L.Control.extend({
                 tdDivider.colSpan = 2;
                 tdDivider.innerText = labelString;
         },
+
         addDataRow: function(tableElement, labelString) {
                 tr = tableElement.insertRow();
                 tdLabel = tr.insertCell();
@@ -58,17 +62,66 @@ L.Control.ViewMeta = L.Control.extend({
                 return tdData;
         },
 
+        parseParams: function() {
+                try {
+                        lat = +this.urlParams.get("lat");
+                        lng = +this.urlParams.get("lng");
+
+                        if (lat && lng) {
+                                this.map.panTo(new L.LatLng(lat, lng));
+                        }
+
+                        nb = +this.urlParams.get("nb");
+                        wb = +this.urlParams.get("wb");
+                        sb = +this.urlParams.get("sb");
+                        eb = +this.urlParams.get("eb");
+
+                        if (nb && sb && eb && wb) {
+                                nw_bound = L.latLng(nb, wb);
+                                se_bound = L.latLng(sb, eb);
+
+                                bounds = L.latLngBounds(nw_bound, se_bound);
+
+                                this.map.fitBounds(bounds);
+                        }
+                } catch (e) {
+                        console.log(e);
+                }
+        },
+
         update: function() {
                 center = this.map.getCenter();
-                this.lat_e.innerText = this.formatNumber(center.lat);
-                this.lng_e.innerText = this.formatNumber(center.lng);
-
                 bounds = this.map.getBounds();
-                this.nb_e.innerText = this.formatNumber(bounds.getNorth());
-                this.sb_e.innerText = this.formatNumber(bounds.getSouth());
-                this.eb_e.innerText = this.formatNumber(bounds.getEast());
-                this.wb_e.innerText = this.formatNumber(bounds.getWest());
 
+                latStr = this.formatNumber(center.lat);
+                lngStr = this.formatNumber(center.lng);
+
+                nbStr = this.formatNumber(bounds.getNorth());
+                sbStr = this.formatNumber(bounds.getSouth());
+                ebStr = this.formatNumber(bounds.getEast());
+                wbStr = this.formatNumber(bounds.getWest());
+
+                this.lat_e.innerText = latStr;
+                this.lng_e.innerText = lngStr;
+
+                this.nb_e.innerText = nbStr;
+                this.sb_e.innerText = sbStr;
+                this.eb_e.innerText = ebStr;
+                this.wb_e.innerText = wbStr;
+
+                this.urlParams.set("lat", latStr);
+                this.urlParams.set("lng", lngStr);
+
+                this.urlParams.set("nb", nbStr);
+                this.urlParams.set("sb", sbStr);
+                this.urlParams.set("eb", ebStr);
+                this.urlParams.set("wb", wbStr);
+
+                window.history.replaceState(
+                        {},
+                        "",
+                        `?${this.urlParams.toString()}`
+                );
         },
 
         formatNumber: function(num) {
@@ -76,8 +129,7 @@ L.Control.ViewMeta = L.Control.extend({
                         minimumFractionDigits: 3,
                         maximumFractionDigits: 3
                 });
-        },
-
+        }
 });
 
 L.control.viewMeta = function(options) {
