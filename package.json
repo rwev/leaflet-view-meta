@@ -1,0 +1,24 @@
+{
+  "name": "leaflet-view-meta",
+  "displayName": "leaflet-view-meta",
+  "version": "0.0.0",
+  "description": "",
+  "author": "rwev",
+  "license": "GPL-3.0",
+  "main": "dist/leaflet-view-meta.js",
+  "files": [
+          "src"
+  ],
+  "bugs": {
+    "url": "https://github.com/rwev/leaflet-view-meta/issues"
+  },
+  "homepage": "https://github.com/rwev/leaflet-view-meta#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rwev/leaflet-view-meta.git"
+  },
+  "private": true,
+  "dependencies": {
+    "leaflet": "^1.4.0"
+  }
+}
